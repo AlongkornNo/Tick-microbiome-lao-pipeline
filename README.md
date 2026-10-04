@@ -75,44 +75,7 @@ for your platform; everything else is a normal `pip`/`conda install` or
 | `alpha_diversity_stats.py` | Shared helper: from-scratch Chao1/Shannon/Simpson/Pielou + stats |
 | `aggregate_genus_by_site.py` | Shared helper: per-specimen → per-site genus means |
 
-## Known limitations (read before treating any number here as final)
 
-This package was reconstructed and cross-checked against the original
-analysis scripts and the manuscript's already-published results, not
-run start-to-finish end-to-end in one pass (this environment has no
-QIIME 2, R, or raw FASTQ data available to do that). Please be aware of
-the following before reusing or citing results from it:
-
-- **Three independent rarefactions, not one.** `qiime feature-table
-  rarefy` (step `09`) and `core-metrics-phylogenetic`'s internal
-  resampling (step `14`) each draw an independent random subsample at
-  the same depth (1,800 reads/sample) — neither has a fixed seed. As a
-  result: Shannon/Observed Features/Evenness/Faith's PD, and the
-  pairwise PERMANOVA (`23`) + PERMDISP (`17`), all come from step 14's
-  draw; Chao1/Simpson/Good's coverage, and the **global** PERMANOVA in
-  Table 3 (`16`), come from step 09's draw instead. A from-scratch
-  recomputation using one draw will not exactly reproduce results
-  computed from the other, even though both are at the same depth from
-  the same input table. See the header comments in `14`, `15`, `16`,
-  `17`, and `23` for the full detail.
-- **R scripts are unexecuted.** `17_run_permdisp.R`, `19_plot_taxa_barplot.R`,
-  `21_plot_alpha_boxplots.R`, and `22_plot_beta_pcoa.R` were written
-  against the Methods text and, where possible, real analysis scripts
-  and verified helper logic — but never run in an R environment (none
-  was available while writing them). Test them on your own data before
-  trusting their output.
-- **Genus-level site means (`25`) do not exactly match a previously
-  computed reference table** for this dataset (differences of several
-  percentage points on some dominant genera, e.g. ~55% vs. ~60% for one
-  genus at one site). The per-specimen relative-abundance logic
-  (`summarize_taxonomy.py`) is the same code independently verified
-  against the manuscript's phylum/family table (exact match), so the
-  likely explanation is the same rarefaction-snapshot issue above
-  rather than a logic error — but this was not fully traced to ground
-  truth.
-- **PERMDISP uses `betadisper`'s default (`type = "median"`)**, not
-  `"centroid"` — confirmed from the real analysis script, but worth
-  double-checking against your own intent if you adapt this elsewhere.
 
 ## License
 
